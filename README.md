@@ -5,7 +5,7 @@ https://github.com/gvnsp/FinalProject.git
 
 Data sources\
 Used CMS and Census Bureau Website\
-Retrived Data using API Keys\
+Retrived Data using API Keys
 
 Data Structure
 
