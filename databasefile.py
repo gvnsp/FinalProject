@@ -118,25 +118,38 @@ def populate_database():
 def data1_access(State,Year, Household_Size= None):
     conn = sqlite3.connect(DB_NAME)
     cur = conn.cursor()
-    fetch_data1 = f''' SELECT Income_Level FROM data1 WHERE State =='{State}' AND Year == '{Year}' AND Household_Size == '{Household_Size}' '''
-    print(cur.execute(fetch_data1).fetchall())
+    if Household_Size:
+        fetch_data1 = f''' SELECT Income_Level FROM data1 WHERE State =='{State}' AND Year == '{Year}' AND Household_Size == '{Household_Size}' '''
+    else:
+        fetch_data1 = f''' SELECT Income_Level FROM data1 WHERE State =='{State}' AND Year == '{Year}' '''
+    result = cur.execute(fetch_data1).fetchall()
     conn.commit()
     conn.close()
-#data1_access('KY',2018,7)
+    return result
+#data1_access('KY',2018, 1)
 
 def data2_access(State,Year,Medicaid_Status = None,Medicare_Status =None):
     conn = sqlite3.connect(DB_NAME)
     cur = conn.cursor()
-    fetch_data1 = f''' SELECT Medicaid_Status,Medicare_Status,Poverty_Ratio,Education_Level FROM data2 \
-        WHERE State =='{State}' AND Year == '{Year}' AND Medicaid_Status == '{Medicaid_Status}' AND Medicare_Status == '{Medicare_Status}' '''
-    print(cur.execute(fetch_data1).fetchall())
+    if Medicaid_Status:
+        fetch_data1 = f''' SELECT Medicaid_Status,Poverty_Ratio FROM data2 \
+            WHERE State =='{State}' AND Year == '{Year}' AND Medicaid_Status == '{Medicaid_Status}' '''
+    else:
+        fetch_data1 = f''' SELECT Medicare_Status,Poverty_Ratio FROM data2 \
+            WHERE State =='{State}' AND Year == '{Year}' AND Medicare_Status == '{Medicare_Status}' '''
+    # else:
+    #     fetch_data1 = f''' SELECT Medicaid_Status, Medicare_Status,Poverty_Ratio,Education_Level FROM data2 \
+    #         WHERE State =='{State}' AND Year == '{Year}' '''
+    result =  cur.execute(fetch_data1).fetchall()
     conn.commit()
     conn.close()
-#data2_access('WA',2020,1,1)
+    return result
+#data2_access('TX',2020, None,2)
 
 states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']
 years = [2016,2017,2018,2019,2020]
-prompts = ['Medicaid_Status','Medicare_Status']
+prompt1 = ['Medicare', 'Medicaid']
+prompts = [1,2,0] # For Medicaid and Medicare Status
 Household_Size = [1,2,3,4,5,6,7,8]
 tree ={}
 
@@ -145,12 +158,19 @@ def create_tree():
         tree[item1] = {}
         for item2 in years:
             tree[item1][item2] = {}
-            for item3 in prompts:
-                fetch_data2 = data2_access(item1,item2,item3,item3)
-                tree[item1][item2][item3] = fetch_data2
-                # for item4 in Household_Size:
-                #     fetch_data1 = data1_access(item1,item2,item4)
-                #     tree[item1][item2][item3][item4] = {}
+            for item3 in prompt1:
+                tree[item1][item2][item3] = {}
+                for item4 in prompts:
+                    tree[item1][item2][item3][item4] = {}
+                    for item5 in Household_Size:
+                        if item3 == 'Medicare':
+                            fetch_data1 = data1_access(item1,item2,item5)
+                            fetch_data2 = data2_access(item1, item2, Medicare_Status=item4, Medicaid_Status=None)
+                            tree[item1][item2][item3][item4][item5] = fetch_data1 + fetch_data2
+                        else:
+                            fetch_data1 = data1_access(item1,item2,item5)
+                            fetch_data2 = data2_access(item1, item2, Medicare_Status=None, Medicaid_Status=item4)
+                            tree[item1][item2][item3][item4][item5] = fetch_data1 + fetch_data2
     return tree
 
 pprint.pprint(create_tree())
