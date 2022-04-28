@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""Final Project.PRATAP
-"""
-
-#PIP INSTALL CODE CHUNK
-
 from multiprocessing import AuthenticationError
 from turtle import title
 import requests
