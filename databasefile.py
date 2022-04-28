@@ -4,6 +4,7 @@ import pandas as pd
 import sqlite3
 from sqlite3 import Error
 import csv
+import pprint
 
 DB_NAME = 'Database.sqlite'
 
@@ -145,6 +146,11 @@ def create_tree():
         for item2 in years:
             tree[item1][item2] = {}
             for item3 in prompts:
-                pass
-                for item4 in Household_Size:
-                    pass
+                fetch_data2 = data2_access(item1,item2,item3,item3)
+                tree[item1][item2][item3] = fetch_data2
+                # for item4 in Household_Size:
+                #     fetch_data1 = data1_access(item1,item2,item4)
+                #     tree[item1][item2][item3][item4] = {}
+    return tree
+
+pprint.pprint(create_tree())
