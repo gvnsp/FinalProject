@@ -1,7 +1,7 @@
 # FinalProject
 # Introduction
 Poverty Ratio, Income levels based on household size and Differences between highest income states and selected states would be displayed based on User inputs of state, year, medicare/medicaid status
-Data was extarcted using web scrapping and API keys from CMS website and U.S Census Bureau website. 
+Data was extracted using web scrapping and API keys from CMS website and U.S Census Bureau website. 
 
 # Required Packages:
 
